@@ -40,10 +40,15 @@ foreach($Map in $Deployment)
                     $Arguments += "/PURGE"
                 }
                 # Resolve PSDrives.
+                $Source = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Map.Source)
                 $Target = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Target)
 
-                Write-Verbose "Invoking ROBOCOPY.exe $($Map.Source) $Target $Arguments"
-                ROBOCOPY.exe $Map.Source $Target @Arguments
+                # Remove Trailing BackSlashes. Breaks path if the path has a space.
+                if ($Source[-1] -eq '\') { $Source = $Source -replace '.$' }
+                if ($Target[-1] -eq '\') { $Target = $Target -replace '.$' }
+
+                Write-Verbose "Invoking ROBOCOPY.exe $Source $Target $Arguments"
+                ROBOCOPY.exe $Source $Target @Arguments
             }
             else
             {

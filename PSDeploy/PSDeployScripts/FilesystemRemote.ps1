@@ -104,8 +104,12 @@ Invoke-Command @PSBoundParameters -ScriptBlock {
                         $Arguments += "/PURGE"
                     }
 
-                    # Resolve PSDrives.
+                    # Resolve PSDrives.                    
                     $Target = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Target)
+
+                    # Remove Trailing BackSlashes. Breaks path if the path has a space.
+                    if ($RemoteSource[-1] -eq '\') { $RemoteSource = $RemoteSource -replace '.$' }
+                    if ($Target[-1] -eq '\') { $Target = $Target -replace '.$' }
                     
                     Write-Verbose "Invoking ROBOCOPY.exe $RemoteSource $Target $Arguments"
                     ROBOCOPY.exe $RemoteSource $Target @Arguments
