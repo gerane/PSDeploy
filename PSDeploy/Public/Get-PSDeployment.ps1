@@ -161,8 +161,8 @@
                     #Determine the path to this source. Try absolute, fall back on relative
                     #Fail silently if not file/folder...
                     if(Test-Path $Source -ErrorAction SilentlyContinue)
-                    {
-                        $LocalSource = ( Resolve-Path $Source ).Path
+                    {                        
+                        $LocalSource = ( Resolve-Path $Source ).ProviderPath                        
                     }
                     else
                     {
@@ -221,8 +221,8 @@
                 {
                     #Determine the path to this source. Try absolute, fall back on relative
                     if(Test-Path $Source -ErrorAction SilentlyContinue)
-                    {
-                        $LocalSource = ( Resolve-Path $Source ).Path
+                    {                        
+                        $LocalSource = ( Resolve-Path $Source ).ProviderPath                        
                     }
                     else
                     {

@@ -46,11 +46,12 @@
 }
 
 # Grab nuget bits, install modules, set build variables, start build.
-Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
+#Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
 
-Resolve-Module Psake, PSDeploy, Pester, BuildHelpers
+#Resolve-Module Psake, PSDeploy, Pester, BuildHelpers
 
 Set-BuildEnvironment
 
-Invoke-psake .\psake.ps1
-exit ( [int]( -not $psake.build_success ) )
+Invoke-Pester C:\Github\PSDeploy\Tests\Types\FileSystem.Tests.ps1
+#Invoke-psake .\psake.ps1
+#exit ( [int]( -not $psake.build_success ) )

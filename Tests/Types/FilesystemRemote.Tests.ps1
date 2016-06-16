@@ -14,3 +14,16 @@ InModuleScope 'PSDeploy' {
     }
 
     Describe "FileSystemRemote PS$PSVersion" {
+
+        Context 'Copy Files Remotely' {
+            Mock Invoke-Robocopy { Return $Source }
+            Mock Copy-Item {}
+
+            
+
+            It 'Should call Robocopy' {
+
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
 Remove-Module PSDeploy -ErrorAction SilentlyContinue
 Import-Module $PSScriptRoot\..\..\PSDeploy\PSDeploy.psd1
+Import-Module 'C:\Program Files\WindowsPowerShell\Modules\BuildHelpers\0.0.15\BuildHelpers.psd1'
 Set-BuildEnvironment -Path $PSScriptRoot\..\..
 
 
@@ -333,6 +334,15 @@ InModuleScope 'PSDeploy' {
                 $Results = Test-Path -Path 'TestDrive:\Files2\TestFolder1\TestDelete2.txt'
                 $Results | Should Be $False
             }            
+        }
+
+        Context 'Copies Directory with UNC' {
+            Mock Invoke-Robocopy { Return $target }            
+
+            It 'Should Copy Directory' {
+                $Results = Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags UNCSpaceBackSlash
+                $Results | Should Be '\\contoso.org\share$\Files 2'
+            }
         }
     }
 }

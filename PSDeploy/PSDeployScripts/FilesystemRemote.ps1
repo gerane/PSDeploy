@@ -111,8 +111,7 @@ Invoke-Command @PSBoundParameters -ScriptBlock {
                     if ($RemoteSource[-1] -eq '\') { $RemoteSource = $RemoteSource -replace '.$' }
                     if ($Target[-1] -eq '\') { $Target = $Target -replace '.$' }
                     
-                    Write-Verbose "Invoking ROBOCOPY.exe $RemoteSource $Target $Arguments"
-                    ROBOCOPY.exe $RemoteSource $Target @Arguments
+                    Invoke-Robocopy $Source $Target $Arguments
                 }       
                 else
                 {

@@ -58,4 +58,13 @@ Deploy {
         To 'TestDrive:\Files2'
         Tagged MirrorFalse
     }
+
+    By Filesystem {
+        FromSource 'TestDrive:\Files\'
+        To '\\contoso.org\share$\Files 2\'
+        Tagged UNCSpaceBackSlash
+        WithOptions @{
+            Mirror = $true
+        }
+    }
 }
