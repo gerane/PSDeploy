@@ -1,6 +1,3 @@
-Remove-Module PSDeploy -ErrorAction SilentlyContinue
-Import-Module $PSScriptRoot\..\..\PSDeploy\PSDeploy.psd1
-Set-BuildEnvironment -Path $PSScriptRoot\..\..
 
 
 InModuleScope 'PSDeploy' {

@@ -55,8 +55,8 @@ Pester module.
 #Requires -Module @{ModuleName = 'Pester'; ModuleVersion = '3.4.0'}
 
 
-[ValidateNotNullOrEmpty()]$Manifest = Get-ChildItem $PSScriptRoot\..\..\PSDeploy\PSDeploy.psd1 -Recurse
-$ModuleName = $Manifest.BaseName
+[ValidateNotNullOrEmpty()]$Manifest = Get-Item $ENV:BHProjectPath\$ENV:BHProjectName\$ENV:BHProjectName.psd1
+$ModuleName = $ENV:BHProjectName
 [ValidateNotNullOrEmpty()]$RequiredVersion = ($Manifest | Select-String -Pattern "^ModuleVersion = '([\d\.]*)'$").Matches.Groups.value[1]
 
 
@@ -312,20 +312,17 @@ foreach ($command in $commands) {
                 }
             }
         }
-	    
-        Context "Help Links should be Valid for $CommandName" {            
-            $Links = $help.relatedLinks.navigationLink.uri
-        
-            foreach ($Link in $Links)
-            {
-                If ($Link)
-                {
-                    # Should have a valid uri if one is provided.
-                    It "[$Link] should have 200 Status Code for $CommandName" {        
-                        $Results = Invoke-WebRequest -Uri $Link -UseBasicParsing
-                        $Results.StatusCode | Should Be '200'
-                    }
-                }
+    }
+
+    Describe "$CommandName : URL links should be valid" -Tag Links {
+        $Links = $help.relatedLinks.navigationLink.uri | Where-Object { ($_ -ne '') -AND ($_ -ne $Null) }
+
+        foreach ($Link in $Links)
+        {
+            # Uri returns OK. Doesn't verify content
+            It "[$Link] has 200 status code" {
+                $Results = Invoke-WebRequest -Uri $Link -UseBasicParsing
+                $Results.StatusCode | Should Be '200'
             }
         }
     }

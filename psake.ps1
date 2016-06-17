@@ -34,6 +34,10 @@ Task Test -Depends Init  {
     $lines
     "`n`tSTATUS: Testing with PowerShell $PSVersion"
 
+    # Run Tests against Module being Deployed 
+    Remove-Module PSDeploy -ErrorAction SilentlyContinue
+    Import-Module $ProjectRoot\PSDeploy\PSDeploy.psd1
+
     # Gather test results. Store them in a variable and file
     $TestResults = Invoke-Pester -Path $ProjectRoot\Tests -PassThru -OutputFormat NUnitXml -OutputFile "$ProjectRoot\$TestFile"
 

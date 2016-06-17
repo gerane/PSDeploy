@@ -61,8 +61,35 @@ Deploy {
 
     By Filesystem {
         FromSource 'TestDrive:\Files\'
+        To '\\contoso.org\share$\Files2'
+        Tagged UNC
+        WithOptions @{
+            Mirror = $true
+        }
+    }
+
+    By Filesystem {
+        FromSource 'TestDrive:\Files\'
         To '\\contoso.org\share$\Files 2\'
         Tagged UNCSpaceBackSlash
+        WithOptions @{
+            Mirror = $true
+        }
+    }
+
+    By Filesystem {
+        FromSource 'TestDrive:\Files\'
+        To '\\contoso.org\share$\Files 2'
+        Tagged UNCSpace
+        WithOptions @{
+            Mirror = $true
+        }
+    }
+
+    By Filesystem {
+        FromSource 'TestDrive:\Files\'
+        To '\\contoso.org\share$\Files2\'
+        Tagged UNCBackSlash
         WithOptions @{
             Mirror = $true
         }

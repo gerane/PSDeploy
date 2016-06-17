@@ -1,7 +1,3 @@
-Remove-Module PSDeploy -ErrorAction SilentlyContinue
-Import-Module $PSScriptRoot\..\..\PSDeploy\PSDeploy.psd1
-Import-Module 'C:\Program Files\WindowsPowerShell\Modules\BuildHelpers\0.0.15\BuildHelpers.psd1'
-Set-BuildEnvironment -Path $PSScriptRoot\..\..
 
 
 InModuleScope 'PSDeploy' {
@@ -233,6 +229,7 @@ InModuleScope 'PSDeploy' {
         Context 'Copies Directory and Removes Additional Files' {
             $null = New-Item -Path "TestDrive:\Files2\TestDeleteDir" -ItemType Directory
             $null = New-Item -Path "TestDrive:\Files2\TestDelete.txt" -ItemType File
+            $null = New-Item -Path "TestDrive:\Files2\TestFolder1" -ItemType Directory
             $null = New-Item -Path "TestDrive:\Files2\TestFolder1\TestDelete2.txt" -ItemType File
 
             Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags SourceSpaceBackSlash
@@ -286,6 +283,7 @@ InModuleScope 'PSDeploy' {
         Context 'Copies Directory and Leaves Additional Files' {
             $null = New-Item -Path "TestDrive:\Files2\TestDeleteDir" -ItemType Directory
             $null = New-Item -Path "TestDrive:\Files2\TestDelete.txt" -ItemType File
+            $null = New-Item -Path "TestDrive:\Files2\TestFolder1" -ItemType Directory
             $null = New-Item -Path "TestDrive:\Files2\TestFolder1\TestDelete2.txt" -ItemType File
 
             Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags MirrorFalse
@@ -320,27 +318,74 @@ InModuleScope 'PSDeploy' {
                 $Results | Should Be $True
             }
 
-            It 'Should Remove TestDeleteDir Directory' {
+            It 'Should Not Remove TestDeleteDir Directory' {
                 $Results = Test-Path -Path 'TestDrive:\Files2\TestDeleteDir'
                 $Results | Should Be $True
             }
 
-            It 'Should Remove TestDelete.txt' {
+            It 'Should Not Remove TestDelete.txt' {
                 $Results = Test-Path -Path 'TestDrive:\Files2\TestDelete.txt'
                 $Results | Should Be $True
             }
 
-            It 'Should Remove TestDelete2.txt' {
+            It 'Should Not Remove TestDelete2.txt' {
                 $Results = Test-Path -Path 'TestDrive:\Files2\TestFolder1\TestDelete2.txt'
-                $Results | Should Be $False
+                $Results | Should Be $True
             }            
         }
 
         Context 'Copies Directory with UNC' {
             Mock Invoke-Robocopy { Return $target }            
 
-            It 'Should Copy Directory' {
-                $Results = Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags UNCSpaceBackSlash
+            $Results = Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags UNC
+
+            It 'Should Call Invoke-Robocopy' {
+                Assert-MockCalled Invoke-Robocopy -Times 1 -Exactly
+            }
+
+            It 'Should Return Proper UNC Path' {                
+                $Results | Should Be '\\contoso.org\share$\Files2'
+            }
+        }
+
+        Context 'Copies Directory with UNC with Space and BackSlash' {
+            Mock Invoke-Robocopy { Return $target }            
+
+            $Results = Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags UNCSpaceBackSlash
+
+            It 'Should Call Invoke-Robocopy' {
+                Assert-MockCalled Invoke-Robocopy -Times 1 -Exactly
+            }
+
+            It 'Should Return Proper UNC Path' {                
+                $Results | Should Be '\\contoso.org\share$\Files 2'
+            }
+        }
+
+        Context 'Copies Directory with UNC with Space' {
+            Mock Invoke-Robocopy { Return $target }            
+
+            $Results = Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags UNCSpace
+
+            It 'Should Call Invoke-Robocopy' {
+                Assert-MockCalled Invoke-Robocopy -Times 1 -Exactly
+            }
+
+            It 'Should Return Proper UNC Path' {                
+                $Results | Should Be '\\contoso.org\share$\Files 2'
+            }
+        }
+
+        Context 'Copies Directory with UNC with Space' {
+            Mock Invoke-Robocopy { Return $target }            
+
+            $Results = Invoke-PSDeploy @Verbose -Path "$ProjectRoot\Tests\artifacts\DeploymentsFileSystem.PSDeploy.ps1" -Force -Tags UNCBackSlash
+
+            It 'Should Call Invoke-Robocopy' {
+                Assert-MockCalled Invoke-Robocopy -Times 1 -Exactly
+            }
+
+            It 'Should Return Proper UNC Path' {                
                 $Results | Should Be '\\contoso.org\share$\Files 2'
             }
         }

@@ -1,6 +1,3 @@
-Remove-Module PSDeploy -ErrorAction SilentlyContinue
-Import-Module $PSScriptRoot\..\..\PSDeploy\PSDeploy.psd1
-Set-BuildEnvironment -Path $PSScriptRoot\..\..
 
 
 InModuleScope 'PSDeploy' {
@@ -18,8 +15,6 @@ InModuleScope 'PSDeploy' {
         Context 'Copy Files Remotely' {
             Mock Invoke-Robocopy { Return $Source }
             Mock Copy-Item {}
-
-            
 
             It 'Should call Robocopy' {
 

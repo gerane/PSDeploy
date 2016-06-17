@@ -27,19 +27,19 @@
                     Write-Verbose -Message "$($ModuleName) Installed Version [$($Version.tostring())] is outdated. Installing Gallery Version [$($GalleryVersion.tostring())]"
                     
                     Install-Module -Name $ModuleName -Force
-                    Import-Module -Name $ModuleName -Force -RequiredVersion $GalleryVersion
+                    Import-Module -Name $ModuleName -RequiredVersion $GalleryVersion
                 }
                 else
                 {
                     Write-Verbose -Message "Module Installed, Importing $($ModuleName)"
-                    Import-Module -Name $ModuleName -Force -RequiredVersion $Version
+                    Import-Module -Name $ModuleName
                 }
             }
             else
             {
                 Write-Verbose -Message "$($ModuleName) Missing, installing Module"
                 Install-Module -Name $ModuleName -Force
-                Import-Module -Name $ModuleName -Force -RequiredVersion $Version
+                Import-Module -Name $ModuleName
             }
         }
     }
@@ -50,8 +50,12 @@
 
 #Resolve-Module Psake, PSDeploy, Pester, BuildHelpers
 
-Set-BuildEnvironment
+# Run Tests against Module being Deployed 
+# Remove-Module PSDeploy -ErrorAction SilentlyContinue
+# Import-Module $PSScriptRoot\PSDeploy\PSDeploy.psd1
 
-Invoke-Pester C:\Github\PSDeploy\Tests\Types\FileSystem.Tests.ps1
-#Invoke-psake .\psake.ps1
-#exit ( [int]( -not $psake.build_success ) )
+Set-BuildEnvironment
+$ENV:BHBranchName = 'master'
+
+Invoke-psake .\psake.ps1
+exit ( [int]( -not $psake.build_success ) )
